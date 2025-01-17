@@ -4,7 +4,7 @@ import { useUpdateService } from '../hooks/useUpdateService';
 import { Service, ServiceType } from '../types';
 import { MdClose } from 'react-icons/md';
 import { FaAmbulance, FaUserMd, FaMapMarkerAlt, FaImage, FaInfoCircle } from 'react-icons/fa';
-import { toast } from 'react-toastify'; // Importing toast for notifications
+import { toast } from 'react-toastify';
 
 interface ServiceFormProps {
   service?: Service | null;
@@ -27,6 +27,14 @@ export default function ServiceForm({ service, onClose }: ServiceFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Basic validation for all required fields
+    const { type, title, description, location, latitude, longitude } = formData;
+    if (!type || !title || !description || !location || !latitude || !longitude) {
+      toast.error('Please fill in all fields.');
+      return;
+    }
+
     try {
       if (service) {
         await updateService.mutateAsync({ id: service.id, ...formData });
@@ -63,6 +71,7 @@ export default function ServiceForm({ service, onClose }: ServiceFormProps) {
                 value={formData.type}
                 onChange={e => setFormData(d => ({ ...d, type: e.target.value as ServiceType }))}
                 className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-100 transition duration-150 ease-in-out hover:bg-gray-200 focus:bg-white pl-10 pr-3"
+                required
               >
                 <option value="AMBULANCE">Ambulance</option>
                 <option value="DOCTOR">Doctor</option>
@@ -129,6 +138,7 @@ export default function ServiceForm({ service, onClose }: ServiceFormProps) {
                 value={formData.imageUrl}
                 onChange={e => setFormData(d => ({ ...d, imageUrl: e.target.value }))}
                 className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-100 transition duration-150 ease-in-out hover:bg-gray-200 focus:bg-white pl-10"
+                required
               />
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 <FaImage className="text-lg" />
